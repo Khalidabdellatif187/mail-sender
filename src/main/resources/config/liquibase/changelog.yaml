@@ -1,0 +1,4 @@
+databaseChangeLog:
+    - include:
+          file: ./changelog/create_mail_schema.sql
+          relativeToChangeLogFile: true
