@@ -2,3 +2,9 @@ databaseChangeLog:
     - include:
           file: ./changelog/create_mail_schema.sql
           relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/add_mail_sender_table.sql
+        relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/create_sequence_for_mail_sender_table.sql
+        relativeToChangeLogFile: true
