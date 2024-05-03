@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,6 +21,7 @@ public class MailDto {
     private String subject;
     private String sender;
     private String recipient;
-    private MailStatus mailStatus;
-
+    private MailStatus mailStatus = MailStatus.DRAFT;
+    private LocalDateTime createdDate = LocalDateTime.now();
+    private LocalDateTime sentDate;
 }

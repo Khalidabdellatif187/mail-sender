@@ -8,3 +8,6 @@ databaseChangeLog:
     - include:
         file: ./changelog/create_sequence_for_mail_sender_table.sql
         relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/add_create_date_and_sent_date_to_mail.sql
+        relativeToChangeLogFile: true

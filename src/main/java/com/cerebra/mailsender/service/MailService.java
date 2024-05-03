@@ -8,4 +8,6 @@ public interface MailService {
 
 
     String saveMail(Mail mail);
+
+    Mail getById(Long id);
 }
