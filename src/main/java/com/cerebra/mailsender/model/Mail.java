@@ -46,4 +46,11 @@ public class Mail {
     private LocalDateTime sentDate;
 
 
+    @Column
+    private String messageId;
+
+    @Column
+    private LocalDateTime eventDate;
+
+
 }

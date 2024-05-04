@@ -21,7 +21,9 @@ public class MailDto {
     private String subject;
     private String sender;
     private String recipient;
+    private String messageId;
     private MailStatus mailStatus = MailStatus.DRAFT;
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime sentDate;
+    private LocalDateTime eventDate;
 }

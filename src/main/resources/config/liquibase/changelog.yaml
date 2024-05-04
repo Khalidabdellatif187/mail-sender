@@ -11,3 +11,9 @@ databaseChangeLog:
     - include:
         file: ./changelog/add_create_date_and_sent_date_to_mail.sql
         relativeToChangeLogFile: true
+    - include:
+          file: ./changelog/add_message_id_column.sql
+          relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/add_sent_date_column.sql
+        relativeToChangeLogFile: true

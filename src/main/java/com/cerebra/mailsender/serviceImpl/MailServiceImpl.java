@@ -1,14 +1,11 @@
-package com.cerebra.mailsender.service.implementation;
+package com.cerebra.mailsender.serviceImpl;
 
 
-import com.cerebra.mailsender.dto.MailDto;
-import com.cerebra.mailsender.enums.MailStatus;
+import com.cerebra.mailsender.exception.ResourceNotFoundExceptions;
 import com.cerebra.mailsender.mapper.MailMapper;
 import com.cerebra.mailsender.model.Mail;
 import com.cerebra.mailsender.repository.MailRepository;
 import com.cerebra.mailsender.service.MailService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String sender;
     private final MailRepository mailRepository;
-    private final MailMapper mailMapper;
 
 
     @Override
@@ -32,7 +28,8 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public Mail getById(Long id) {
-        Mail mail = mailRepository.findById(id).orElseThrow();
+        Mail mail = mailRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundExceptions("mail" , "id" , id));
         return mail;
     }
 

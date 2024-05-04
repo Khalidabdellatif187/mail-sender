@@ -2,6 +2,7 @@ package com.cerebra.mailsender.controller;
 
 
 import com.cerebra.mailsender.service.SendMail;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class MailSenderController {
     private final SendMail sendMail;
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> sendEmail(@PathVariable("id")Long id){
-        return new ResponseEntity<>(sendMail.sendEmail(id), HttpStatus.OK);
+    public ResponseEntity<String> sendEmail(@PathVariable("id")Long id) throws MessagingException {
+        return new ResponseEntity<>(sendMail.sendEmail(id),HttpStatus.OK);
     }
 
 }
