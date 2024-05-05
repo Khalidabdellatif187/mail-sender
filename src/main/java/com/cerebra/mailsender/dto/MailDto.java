@@ -2,6 +2,7 @@ package com.cerebra.mailsender.dto;
 
 
 import com.cerebra.mailsender.enums.MailStatus;
+import com.cerebra.mailsender.model.MailLink;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,4 +28,5 @@ public class MailDto {
     private LocalDateTime createdDate = LocalDateTime.now();
     private LocalDateTime sentDate;
     private LocalDateTime eventDate;
+    private List<MailLinkDto> mailLinks;
 }

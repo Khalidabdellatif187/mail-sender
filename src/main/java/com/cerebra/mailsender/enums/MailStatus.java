@@ -2,5 +2,5 @@ package com.cerebra.mailsender.enums;
 
 public enum MailStatus {
 
-    DRAFT,OPENED,SENT,DELIVERED,FAILED
+    DRAFT,OPENED,SENT,DELIVERED,FAILED,ACCEPTED,REJECTED,CLICKED
 }

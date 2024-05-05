@@ -17,3 +17,10 @@ databaseChangeLog:
     - include:
         file: ./changelog/add_sent_date_column.sql
         relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/create_mail_link_sql_table.sql
+        relativeToChangeLogFile: true
+    - include:
+          file: ./changelog/update_data_type_of_column_in_mail_link_table.sql
+          relativeToChangeLogFile: true
+

@@ -9,6 +9,7 @@ import org.hibernate.mapping.Map;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "mail")
@@ -51,6 +52,9 @@ public class Mail {
 
     @Column
     private LocalDateTime eventDate;
+
+    @OneToMany(mappedBy = "mail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MailLink> mailLinks;
 
 
 }
