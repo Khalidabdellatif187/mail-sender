@@ -26,4 +26,7 @@ databaseChangeLog:
     - include:
         file: ./changelog/drop_clicked_date_column_from_mail_link.sql
         relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/add_user_table_ddl.sql
+        relativeToChangeLogFile: true
 
