@@ -25,9 +25,6 @@ public class MailLink {
     private String url;
 
     @Column
-    private LocalDateTime clickedDate;
-
-    @Column
     private Integer clickCount;
 
     @ManyToOne

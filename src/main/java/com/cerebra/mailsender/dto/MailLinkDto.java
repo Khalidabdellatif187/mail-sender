@@ -16,7 +16,5 @@ import java.time.LocalDateTime;
 public class MailLinkDto {
     private Long id;
     private String url;
-    private LocalDateTime clickedDate;
     private Integer clickCount;
-
 }

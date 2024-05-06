@@ -49,6 +49,7 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;
     @Value("${domain.name}")
     private String domainName;
+    private final MailLinkService mailLinkService;
 
 
     @Transactional
@@ -63,15 +64,15 @@ public class MailServiceImpl implements MailService {
     private void saveLinksWithMail(Mail mail){
         MailDto mailDto = mailMapper.map(mail);
         List<MailLink> mailLinks = new ArrayList<>();
-        if (mailDto.getMailLinks() != null || !mailDto.getMailLinks().isEmpty()){
+        if (mailDto.getMailLinks() != null){
             for (MailLinkDto mailLinkDto : mailDto.getMailLinks()){
                 MailLink newMailLink = new MailLink();
                 newMailLink.setMail(mail);
                 newMailLink.setUrl(mailLinkDto.getUrl());
                 mailLinks.add(newMailLink);
             }
+            mail.setMailLinks(mailLinks);
         }
-        mail.setMailLinks(mailLinks);
     }
 
     @Override
@@ -79,6 +80,7 @@ public class MailServiceImpl implements MailService {
         Mail mail = mailRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundExceptions("mail" , "id" , id));
         setLastEventMailStatus(mail);
+        mailLinkService.clicksForLinks(id,mail.getMessageId());
         return mail;
     }
 
@@ -86,7 +88,8 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String sendEmail(Long id) throws MessagingException, JsonProcessingException {
-        Mail mail = getById(id);
+        Mail mail = mailRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundExceptions("mail" , "id" , id));
         MimeMessage mimeMailMessage = createMailMessage(mail);
         return sendMailMessage(mimeMailMessage,mail);
     }
@@ -101,10 +104,12 @@ public class MailServiceImpl implements MailService {
         mailMessage.setFrom(mail.getSender());
         StringBuilder htmlContent = new StringBuilder("<html><head></head><body>");
         htmlContent.append("<p>").append(mail.getBody()).append("</p>");
-        for (MailLink link : mail.getMailLinks()) {
-            htmlContent.append("<p><a href='").append(link.getUrl()).append("' target='_blank'>").append(link.getUrl()).append("</a></p>");
+        if (mail.getMailLinks() != null){
+            for (MailLink link : mail.getMailLinks()) {
+                htmlContent.append("<p><a href='").append(link.getUrl()).append("' target='_blank'>").append(link.getUrl()).append("</a></p>");
+            }
+            htmlContent.append("</body></html>");
         }
-        htmlContent.append("</body></html>");
         mailMessage.setText(htmlContent.toString(), true);
         return mimeMessage;
     }
@@ -113,8 +118,8 @@ public class MailServiceImpl implements MailService {
     private String sendMailMessage(MimeMessage mailMessage, Mail mail){
         mail.setSentDate(LocalDateTime.now());
         try {
-            javaMailSender.send(mailMessage);
             mail.setMailStatus(MailStatus.SENT);
+            javaMailSender.send(mailMessage);
             mail.setEventDate(LocalDateTime.now());
             return "Mail Is Sent Successfully";
         } catch (Exception e) {
@@ -127,6 +132,7 @@ public class MailServiceImpl implements MailService {
                 mailMessageId = mailMessageId.substring(1, mailMessageId.length() - 1);
                 mail.setMessageId(mailMessageId);
             }
+            setLastEventMailStatus(mail);
             mailRepository.save(mail);
         }
     }
@@ -138,7 +144,7 @@ public class MailServiceImpl implements MailService {
         JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
         if (jsonNode != null && !jsonNode.isEmpty()){
             JsonNode items = jsonNode.path("items");
-            if (items.isArray() && items.size() > 0){
+            if ((items.isArray() && items.size() > 0 && items != null) || !items.isEmpty()){
                 JsonNode lastItem = items.get(0);
                 String event = lastItem.get("event").asText();
                 String eventTime= lastItem.get("timestamp").asText();
@@ -159,13 +165,6 @@ public class MailServiceImpl implements MailService {
             }
         }
         mailRepository.save(mail);
-    }
-
-    @Override
-    public Mail findById(Long id) {
-        Mail mail = mailRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundExceptions("mail" , "id" , id));
-        return mail;
     }
 
 

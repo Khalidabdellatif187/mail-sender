@@ -30,9 +30,9 @@ public class MailLinkController {
         return new ResponseEntity<List<MailLinkDto>>(mailLinkService.findByMailId(mailId), HttpStatus.OK);
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<Void> count(@RequestParam("mailId")Long mailId) throws JsonProcessingException {
-        mailLinkService.clicksForLinks(mailId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @GetMapping("/count")
+//    public ResponseEntity<Void> count(@RequestParam("mailId")Long mailId) throws JsonProcessingException {
+//        mailLinkService.clicksForLinks(mailId);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 }

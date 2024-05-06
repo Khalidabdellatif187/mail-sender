@@ -32,7 +32,7 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     private final MailLinkRepository mailLinkRepository;
     private final MailLinkMapper mailLinkMapper;
-    private final MailService mailService;
+//    private final MailService mailService;
     private final EventMailClient eventMailClient;
     @Value("${domain.name}")
     private String domainName;
@@ -47,11 +47,10 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     @Override
     @Transactional
-    public void clicksForLinks(Long mailId) throws JsonProcessingException {
-        Mail mail = mailService.findById(mailId);
+    public void clicksForLinks(Long mailId,String messageId) throws JsonProcessingException {
         List<MailLinkDto> mailLinkDtos = findByMailId(mailId);
         if (mailLinkDtos != null || !mailLinkDtos.isEmpty()) {
-            String jsonData = eventMailClient.getClickedLinkEvents(domainName, mail.getMessageId(), "clicked");
+            String jsonData = eventMailClient.getClickedLinkEvents(domainName,messageId,"clicked");
             JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
             if (jsonNode != null && !jsonNode.isEmpty()) {
                 JsonNode items = jsonNode.path("items");

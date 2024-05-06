@@ -1,0 +1,1 @@
+ALTER table mail.mail_link drop column clicked_date;

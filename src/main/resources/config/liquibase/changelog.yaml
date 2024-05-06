@@ -23,4 +23,7 @@ databaseChangeLog:
     - include:
           file: ./changelog/update_data_type_of_column_in_mail_link_table.sql
           relativeToChangeLogFile: true
+    - include:
+        file: ./changelog/drop_clicked_date_column_from_mail_link.sql
+        relativeToChangeLogFile: true
 
