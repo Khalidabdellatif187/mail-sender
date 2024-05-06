@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/ui")
 @AllArgsConstructor
-public class SignInController {
+public class UiController {
 
     private final UserService userService;
 
