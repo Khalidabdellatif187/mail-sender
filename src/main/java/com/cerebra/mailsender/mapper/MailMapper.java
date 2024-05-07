@@ -6,6 +6,8 @@ import com.cerebra.mailsender.model.Mail;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface MailMapper{
 
@@ -15,4 +17,6 @@ public interface MailMapper{
 
     @Mapping(target = "mailLinks", source = "mailLinks")
     Mail unMap(MailDto mailDto);
+
+    List<MailDto> mapToList(List<Mail> mailList);
 }

@@ -167,5 +167,11 @@ public class MailServiceImpl implements MailService {
         mailRepository.save(mail);
     }
 
+    @Override
+    public List<MailDto> getAllMails() {
+        List<MailDto> mailDtos = mailMapper.mapToList(mailRepository.findAll());
+        return mailDtos;
+    }
+
 
 }

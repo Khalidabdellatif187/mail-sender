@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/mail")
 @RequiredArgsConstructor
@@ -25,6 +27,12 @@ public class MailController {
     private final EventMailClient eventMailClient;
     @Value("${domain.name}")
     private String domainName;
+
+
+    @GetMapping
+    public ResponseEntity<List<MailDto>> getAllMails(){
+        return new ResponseEntity<List<MailDto>>(mailService.getAllMails(),HttpStatus.OK);
+    }
 
     @PostMapping("/save")
     public ResponseEntity<String> save(@RequestBody MailDto mailDto){
