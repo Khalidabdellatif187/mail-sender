@@ -5,7 +5,7 @@
 <p>- If there are any links with the body of the mail , user can track the if the link clicked or not and how many times the reciever click the link</p>
 <br/>
 <h1>Way Of Installation</h1>
-<p>- You should clone the project from github using this link <strong></strong></p>
+<p>- You should clone the project from github using this link <strong>https://github.com/Khalidabdellatif187/mail-sender.git</strong></p>
 <p>- After cloning , please create a postgresql database called <strong>mail_sender</strong> and ensure that it has <strong>public</strong> schema</p>
 <p>- After you create the database , you can run the project and liquibase sql files will update database </p>
 <p>- After that you can open your browser and go to <strong>http://localhost:8099/ui</strong></p>
