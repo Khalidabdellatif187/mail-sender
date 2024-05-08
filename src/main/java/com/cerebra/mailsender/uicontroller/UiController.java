@@ -12,6 +12,7 @@ import com.cerebra.mailsender.service.MailService;
 import com.cerebra.mailsender.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -103,11 +104,22 @@ public class UiController {
     @PostMapping("/delete-mail/{id}")
     public String deleteMail(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            mailService.deleteById(id); // Assuming you have a deleteMail method in your service
+            mailService.deleteById(id);
             redirectAttributes.addFlashAttribute("successMessage", "Mail deleted successfully.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting mail: " + e.getMessage());
         }
-        return "redirect:/ui/mails"; // Redirect back to the mail list
+        return "redirect:/ui/mails";
+    }
+
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().invalidate();
+        Cookie authCookie = new Cookie("AUTH-TOKEN", null);
+        authCookie.setMaxAge(0);
+        authCookie.setPath("/");
+        response.addCookie(authCookie);
+        return "redirect:/ui";
     }
 }

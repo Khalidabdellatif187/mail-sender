@@ -4,67 +4,76 @@
     <meta charset="UTF-8">
     <title>Mail List</title>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
-    table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    th {
-        background-color: #4CAF50;
-        color: white;
-    }
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-    tr:hover {
-        background-color: #ddd;
-    }
-    #addMailButton {
-        position: absolute;
-        right: 20px;
-        top: 20px;
-        padding: 10px 20px;
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .actionButtonContainer {
-        display: flex;
-        gap: 10px;
-    }
-    .actionButton {
-        color: #fff;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        flex-grow: 1;
-    }
-    .sendButton {
-        background-color: #28a745;
-    }
-    .deleteButton {
-        background-color: #dc3545;
-    }
-</style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        #buttonContainer {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        .actionButton {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #logoutButton {
+            background-color: #dc3545;
+        }
+        .actionButtonContainer {
+            display: flex;
+            gap: 10px;
+        }
+        .smallActionButton {
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .sendButton {
+            background-color: #28a745;
+        }
+        .deleteButton {
+            background-color: #dc3545;
+        }
+    </style>
 
 </head>
 <body>
-<button id="addMailButton" onclick="location.href='/ui/add-mail'">Add Mail</button>
+<div id="buttonContainer">
+    <button id="addMailButton" class="actionButton" onclick="location.href='/ui/add-mail'">Add Mail</button>
+    <button id="logoutButton" class="actionButton" onclick="location.href='/ui/logout'">Logout</button>
+</div>
 <h1>Mail List</h1>
 <table>
     <thead>
