@@ -140,37 +140,46 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void setLastEventMailStatus(Mail mail) throws JsonProcessingException {
-        String jsonData = eventMailClient.getMailgunEvents(domainName,mail.getMessageId());
-        JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
-        if (jsonNode != null && !jsonNode.isEmpty()){
-            JsonNode items = jsonNode.path("items");
-            if ((items.isArray() && items.size() > 0 && items != null) || !items.isEmpty()){
-                JsonNode lastItem = items.get(0);
-                String event = lastItem.get("event").asText();
-                String eventTime= lastItem.get("timestamp").asText();
-                if (event.equals("delivered")) {
-                    mail.setMailStatus(MailStatus.DELIVERED);
-                }else if(event.equals("accepted")){
-                    mail.setMailStatus(MailStatus.ACCEPTED);
-                }else if(event.equals("failed")){
-                    mail.setMailStatus(MailStatus.FAILED);
-                }else if(event.equals("rejected")) {
-                    mail.setMailStatus(MailStatus.REJECTED);
-                }else if(event.equals("clicked")){
-                    mail.setMailStatus(MailStatus.CLICKED);
-                }else if(event.equals("opened")){
-                    mail.setMailStatus(MailStatus.OPENED);
+        if (mail.getMessageId() != null) {
+            String jsonData = eventMailClient.getMailgunEvents(domainName, mail.getMessageId());
+            JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
+            if (jsonNode != null && !jsonNode.isEmpty()) {
+                JsonNode items = jsonNode.path("items");
+                if ((items.isArray() && items.size() > 0 && items != null) || !items.isEmpty()) {
+                    JsonNode lastItem = items.get(0);
+                    String event = lastItem.get("event").asText();
+                    String eventTime = lastItem.get("timestamp").asText();
+                    if (event.equals("delivered")) {
+                        mail.setMailStatus(MailStatus.DELIVERED);
+                    } else if (event.equals("accepted")) {
+                        mail.setMailStatus(MailStatus.ACCEPTED);
+                    } else if (event.equals("failed")) {
+                        mail.setMailStatus(MailStatus.FAILED);
+                    } else if (event.equals("rejected")) {
+                        mail.setMailStatus(MailStatus.REJECTED);
+                    } else if (event.equals("clicked")) {
+                        mail.setMailStatus(MailStatus.CLICKED);
+                    } else if (event.equals("opened")) {
+                        mail.setMailStatus(MailStatus.OPENED);
+                    }
+                    mail.setEventDate(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"));
                 }
-                mail.setEventDate(Utilities.formatTimestamp(Double.parseDouble(eventTime),"Asia/Riyadh"));
             }
+            mailRepository.save(mail);
         }
-        mailRepository.save(mail);
     }
 
     @Override
     public List<MailDto> getAllMails() {
         List<MailDto> mailDtos = mailMapper.mapToList(mailRepository.findAll());
         return mailDtos;
+    }
+
+    @Override
+    public void deleteById(Long mailId) {
+        Mail mail =  mailRepository.findById(mailId).orElseThrow(() ->
+                new ResourceNotFoundExceptions("mail" , "id" , mailId));
+       mailRepository.deleteById(mail.getId());
     }
 
 

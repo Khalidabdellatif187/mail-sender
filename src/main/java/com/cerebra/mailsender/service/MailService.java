@@ -19,5 +19,6 @@ public interface MailService {
     String sendEmail(Long id) throws MessagingException, JsonProcessingException;
     void setLastEventMailStatus(Mail mail) throws JsonProcessingException;
     List<MailDto> getAllMails();
+    void deleteById(Long mailId);
 
 }

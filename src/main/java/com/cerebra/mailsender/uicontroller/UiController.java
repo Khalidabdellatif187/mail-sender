@@ -41,22 +41,22 @@ public class UiController {
             authCookie.setHttpOnly(true);
             authCookie.setPath("/");
             response.addCookie(authCookie);
-            return "redirect:/ui/hello";
+            return "redirect:/ui/mails";
         } catch (Exception e) {
             model.addAttribute("error", "Invalid username or password");
             return "signin";
         }
     }
 
-    @GetMapping("/hello")
-    public String helloWorld(Model model) {
-        model.addAttribute("hello",mailService.getAllMails());
-        return "hello";
+    @GetMapping("/mails")
+    public String mailList(Model model) {
+        model.addAttribute("mails",mailService.getAllMails());
+        return "mails";
     }
     @PostMapping("/add-mail")
     public String handleAddMail(@ModelAttribute MailDto mailDto, Model model) {
-        mailService.saveMail(mailMapper.unMap(mailDto)); // Assuming saveMail() handles the logic of saving the mail
-        return "redirect:/ui/hello";
+        mailService.saveMail(mailMapper.unMap(mailDto));
+        return "redirect:/ui/mails";
     }
     @GetMapping("/add-mail")
     public String showAddMailForm(Model model) {
@@ -67,7 +67,7 @@ public class UiController {
     @GetMapping("/mail-detail/{id}")
     public String mailDetail(@PathVariable Long id, Model model) throws JsonProcessingException {
         Mail mail = mailService.getById(id);
-        MailDto mailDto = mailMapper.map(mail); // Assuming you have a method to get mail by ID
+        MailDto mailDto = mailMapper.map(mail);
         model.addAttribute("mail", mailDto);
         return "mail-detail";
     }
@@ -79,7 +79,7 @@ public class UiController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error sending email: " + e.getMessage());
         }
-        return "redirect:/ui/hello";
+        return "redirect:/ui/mails";
     }
 
 
@@ -93,10 +93,21 @@ public class UiController {
         try {
             String result = userService.signUp(signUp);
             model.addAttribute("message", result);
-            return "redirect:/ui/signin"; // Redirect to the sign-in page after successful registration
+            return "redirect:/ui";
         } catch (ApiExceptions e) {
             model.addAttribute("error", e.getMessage());
-            return "signup"; // Stay on the sign-up page and show the error
+            return "signup";
         }
+    }
+
+    @PostMapping("/delete-mail/{id}")
+    public String deleteMail(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            mailService.deleteById(id); // Assuming you have a deleteMail method in your service
+            redirectAttributes.addFlashAttribute("successMessage", "Mail deleted successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting mail: " + e.getMessage());
+        }
+        return "redirect:/ui/mails"; // Redirect back to the mail list
     }
 }

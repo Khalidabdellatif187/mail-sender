@@ -63,6 +63,13 @@ public class MailController {
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMailById(@PathVariable("id")Long id){
+        mailService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
 
 

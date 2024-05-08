@@ -10,4 +10,6 @@ public interface MailLinkService {
 
     List<MailLinkDto> findByMailId(Long mailId);
     void clicksForLinks(Long mailId , String messageId) throws JsonProcessingException;
+
+
 }

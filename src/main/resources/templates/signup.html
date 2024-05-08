@@ -82,7 +82,9 @@
             <input type="email" id="email" name="email" required>
         </div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-        <button type="submit">Register</button>
+        <a th:href="@{/ui}" style="text-decoration: none;">
+            <button type="submit">Register</button>
+        </a>
     </form>
     <div>
         <a th:href="@{/ui}"><button type="button">Back to Sign In</button></a>

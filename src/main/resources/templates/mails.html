@@ -4,36 +4,67 @@
     <meta charset="UTF-8">
     <title>Mail List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #ddd;
-        }
-    </style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+    #addMailButton {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .actionButtonContainer {
+        display: flex;
+        gap: 10px;
+    }
+    .actionButton {
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        flex-grow: 1;
+    }
+    .sendButton {
+        background-color: #28a745;
+    }
+    .deleteButton {
+        background-color: #dc3545;
+    }
+</style>
+
 </head>
 <body>
+<button id="addMailButton" onclick="location.href='/ui/add-mail'">Add Mail</button>
 <h1>Mail List</h1>
 <table>
     <thead>
@@ -45,10 +76,11 @@
         <th>Created Date</th>
         <th>Sent Date</th>
         <th>Event Date</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="mail : ${hello}">
+    <tr th:each="mail : ${mails}" th:onclick="'window.location.href=\'/ui/mail-detail/' + ${mail.id} + '\''" class="clickable">
         <td th:text="${mail.subject}"></td>
         <td th:text="${mail.body}"></td>
         <td th:text="${mail.recipient}"></td>
@@ -56,6 +88,16 @@
         <td th:text="${#temporals.format(mail.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
         <td th:text="${mail.sentDate != null ? #temporals.format(mail.sentDate, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
         <td th:text="${mail.eventDate != null ? #temporals.format(mail.eventDate, 'yyyy-MM-dd HH:mm') : 'N/A'}"></td>
+        <td>
+            <div class="actionButtonContainer">
+                <form th:action="@{'/ui/send-mail/' + ${mail.id}}" method="post">
+                    <button type="submit" class="actionButton sendButton">Send</button>
+                </form>
+                <form th:action="@{'/ui/delete-mail/' + ${mail.id}}" method="post">
+                    <button type="submit" class="actionButton deleteButton">Delete</button>
+                </form>
+            </div>
+        </td>
     </tr>
     </tbody>
 </table>
