@@ -18,6 +18,10 @@ public interface EventMailClient {
                             @RequestParam(value = "message-id" , required = true) String messageId);
 
 
+    @GetMapping("{domainName}/events")
+    String getMailgunEvents(@PathVariable("domainName")String domainName);
+
+
 
     @GetMapping("{domainName}/events")
     String getClickedLinkEvents(@PathVariable("domainName")String domainName,

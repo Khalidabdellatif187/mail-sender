@@ -31,11 +31,12 @@ public class MailController {
 
 
     @GetMapping
-    public ResponseEntity<List<MailDto>> getAllMails(){
+    public ResponseEntity<List<MailDto>> getAllMails() throws JsonProcessingException {
         List<MailDto> mailDtos = mailService.getAllMails();
-        return ResponseEntity.ok()
-                .cacheControl(CacheControl.noCache())
-                .body(mailDtos);
+        return new ResponseEntity<>(mailDtos,HttpStatus.OK);
+//        return ResponseEntity.ok()
+//                .cacheControl(CacheControl.noCache())
+//                .body(mailDtos);
     }
 
     @PostMapping("/save")

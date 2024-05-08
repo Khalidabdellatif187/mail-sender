@@ -170,9 +170,29 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public List<MailDto> getAllMails() {
-        List<MailDto> mailDtos = mailMapper.mapToList(mailRepository.findAll());
-        return mailDtos;
+    public List<MailDto> getAllMails() throws JsonProcessingException {
+        List<Mail> mails = mailRepository.findAll();
+        String jsonData = eventMailClient.getMailgunEvents(domainName);
+        JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
+        if (jsonNode != null && !jsonNode.isEmpty()) {
+            JsonNode itemsNode = jsonNode.path("items");
+            for (Mail mail : mails) {
+                if (mail.getMessageId() != null) {
+                    for (JsonNode item : itemsNode) {
+                        String jsonMessageId = item.path("message").path("headers").path("message-id").asText();
+                        if (mail.getMessageId().equals(jsonMessageId)) {
+                            String event = item.path("event").asText();
+                            String eventTime = item.get("timestamp").asText();
+                            mail.setEventDate(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"));
+                            mail.setMailStatus(MailStatus.valueOf(event.toUpperCase()));
+                            mailRepository.save(mail);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return mailMapper.mapToList(mails);
     }
 
     @Override

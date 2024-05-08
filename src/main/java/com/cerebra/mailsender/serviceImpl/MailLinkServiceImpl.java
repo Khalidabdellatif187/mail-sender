@@ -56,10 +56,10 @@ public class MailLinkServiceImpl implements MailLinkService {
                 JsonNode items = jsonNode.path("items");
                 Map<String, Integer> urlCount = new HashMap<>();
                 for (MailLinkDto dto : mailLinkDtos) {
-                    urlCount.put(dto.getUrl(), 0);  // Initialize counts for each URL in MailLinkDto list
+                    urlCount.put(dto.getUrl(), 0);
                 }
                 items.forEach(item -> {
-                    String url = item.path("url").asText();  // Assuming each item has a 'url' field
+                    String url = item.path("url").asText();
                     if (urlCount.containsKey(url)) {
                         urlCount.put(url, urlCount.get(url) + 1);
                     }

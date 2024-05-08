@@ -49,7 +49,7 @@ public class UiController {
     }
 
     @GetMapping("/mails")
-    public String mailList(Model model) {
+    public String mailList(Model model) throws JsonProcessingException {
         model.addAttribute("mails",mailService.getAllMails());
         return "mails";
     }
