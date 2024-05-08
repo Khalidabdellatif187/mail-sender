@@ -170,6 +170,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    @Transactional
     public List<MailDto> getAllMails() throws JsonProcessingException {
         List<Mail> mails = mailRepository.findAll();
         String jsonData = eventMailClient.getMailgunEvents(domainName);
@@ -183,9 +184,9 @@ public class MailServiceImpl implements MailService {
                         if (mail.getMessageId().equals(jsonMessageId)) {
                             String event = item.path("event").asText();
                             String eventTime = item.get("timestamp").asText();
-                            mail.setEventDate(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"));
                             mail.setMailStatus(MailStatus.valueOf(event.toUpperCase()));
                             mailRepository.save(mail);
+                            mailRepository.updateEventDateForMailEvent(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"),mail.getMessageId() , mail.getCreatedDate());
                             break;
                         }
                     }
