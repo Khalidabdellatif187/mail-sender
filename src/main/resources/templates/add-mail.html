@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add New Mail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 50%;
+            min-width: 300px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Added to include padding in width */
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .link-input {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>New Mail</h1>
+    <form th:action="@{/ui/add-mail}" th:object="${mailDto}" method="post">
+        <input type="text" th:field="*{subject}" placeholder="Subject" required/>
+        <input type="text" th:field="*{body}" placeholder="Body" required/>
+        <input type="text" th:field="*{recipient}" placeholder="Recipient" required/>
+        <div th:each="link, stat : *{mailLinks}">
+            <input type="text" th:field="*{mailLinks[__${stat.index}__].url}" placeholder="Link URL" class="link-input"/>
+        </div>
+        <button type="button" onclick="addLink()">Add Link</button>
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+<script>
+    function addLink() {
+        var container = document.querySelector('form');
+        var newField = document.createElement('input');
+        newField.setAttribute('name', 'mailLinks[' + document.querySelectorAll('[name^="mailLinks["]').length + '].url');
+        newField.setAttribute('placeholder', 'Link URL');
+        newField.setAttribute('class', 'link-input');
+        container.appendChild(newField);
+    }
+</script>
+</body>
+</html>

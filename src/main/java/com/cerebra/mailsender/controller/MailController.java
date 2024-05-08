@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,10 @@ public class MailController {
 
     @GetMapping
     public ResponseEntity<List<MailDto>> getAllMails(){
-        return new ResponseEntity<List<MailDto>>(mailService.getAllMails(),HttpStatus.OK);
+        List<MailDto> mailDtos = mailService.getAllMails();
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .body(mailDtos);
     }
 
     @PostMapping("/save")
