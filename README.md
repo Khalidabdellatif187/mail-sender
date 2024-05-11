@@ -2,7 +2,7 @@
 <p>- This aplication aims to send mails by a verified user to anyone using <strong>SMTP</strong></p>
 <p>- <strong>Mailgun</strong> website is used as a tool for sending mails and tracking the events of any sent mail</p>
 <p>- The user can track the events of any mail sent by mailgun like (SENT,FAILED,DELIVRED,OPENED,......) and accurate datetime for each event</p>
-<p>- If there are any links with the body of the mail , user can track the if the link clicked or not and how many times the reciever click the link</p>
+<p>- If there are any links with the body of the mail , user can track the link if the link clicked or not and how many times the reciever click the link</p>
 <br/>
 <h1>Way Of Installation</h1>
 <p>- You should clone the project from github using this link <strong>https://github.com/Khalidabdellatif187/mail-sender.git</strong></p>
