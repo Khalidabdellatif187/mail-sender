@@ -1,5 +1,5 @@
 <h1>Objective</h1>
-<p>- This aplication aims to send mails by a verified user to anyone using <strong>SMTP</strong></p>
+<p>- This application aims to send mails by a verified user to anyone using <strong>SMTP</strong></p>
 <p>- <strong>Mailgun</strong> website is used as a tool for sending mails and tracking the events of any sent mail</p>
 <p>- The user can track the events of any mail sent by mailgun like (SENT,FAILED,DELIVRED,OPENED,......) and accurate datetime for each event</p>
 <p>- If there are any links with the body of the mail , user can track the link if the link clicked or not and how many times the reciever click the link</p>
