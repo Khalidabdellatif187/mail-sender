@@ -32,8 +32,7 @@ public class MailLinkServiceImpl implements MailLinkService {
 
     private final MailLinkRepository mailLinkRepository;
     private final MailLinkMapper mailLinkMapper;
-//    private final MailService mailService;
-    private final EventMailClient eventMailClient;
+    private final MailService mailService;
     @Value("${domain.name}")
     private String domainName;
 
@@ -44,32 +43,14 @@ public class MailLinkServiceImpl implements MailLinkService {
         return mailLinkDtos;
     }
 
-
     @Override
-    @Transactional
-    public void clicksForLinks(Long mailId,String messageId) throws JsonProcessingException {
-        List<MailLinkDto> mailLinkDtos = findByMailId(mailId);
-        if (mailLinkDtos != null || !mailLinkDtos.isEmpty()) {
-            String jsonData = eventMailClient.getClickedLinkEvents(domainName,messageId,"clicked");
-            JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
-            if (jsonNode != null && !jsonNode.isEmpty()) {
-                JsonNode items = jsonNode.path("items");
-                Map<String, Integer> urlCount = new HashMap<>();
-                for (MailLinkDto dto : mailLinkDtos) {
-                    urlCount.put(dto.getUrl(), 0);
-                }
-                items.forEach(item -> {
-                    String url = item.path("url").asText();
-                    if (urlCount.containsKey(url)) {
-                        urlCount.put(url, urlCount.get(url) + 1);
-                    }
-                });
-
-                urlCount.forEach((url, count) -> {
-                    mailLinkRepository.updateClickedCountForLinks(count, mailId, url);
-                });
-
-            }
-        }
+    public MailLink updateMailLinkCountOfClicks(Long mailId, Long linkId) {
+        MailLink mailLink = mailLinkRepository.findById(linkId).orElseThrow();
+        mailLink.setClickCount(mailLink.getClickCount() + 1);
+        mailLinkRepository.updateClickedCountForLinks(mailLink.getClickCount() , mailId , linkId);
+        mailService.updateMailStatusWhenLinksAreClicked(mailId);
+        return mailLink;
     }
+
+
 }

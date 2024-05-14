@@ -44,12 +44,8 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String sender;
     private final MailRepository mailRepository;
-    private final EventMailClient eventMailClient;
     private final MailMapper mailMapper;
     private final JavaMailSender javaMailSender;
-    @Value("${domain.name}")
-    private String domainName;
-    private final MailLinkService mailLinkService;
 
 
     @Transactional
@@ -76,14 +72,18 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public Mail getById(Long id) throws JsonProcessingException {
+    public Mail getMailWithLinksById(Long id) throws JsonProcessingException {
         Mail mail = mailRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundExceptions("mail" , "id" , id));
-        setLastEventMailStatus(mail);
-        mailLinkService.clicksForLinks(id,mail.getMessageId());
         return mail;
     }
 
+    @Override
+    public Mail findById(Long id) {
+        Mail mail = mailRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundExceptions("mail" , "id" , id));
+        return mail;
+    }
 
 
     @Override
@@ -102,11 +102,14 @@ public class MailServiceImpl implements MailService {
         mailMessage.setTo(mail.getRecipient());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setFrom(mail.getSender());
+        String trackingUrl = "https://abd1-154-182-32-10.ngrok-free.app/track/"+mail.getId();
         StringBuilder htmlContent = new StringBuilder("<html><head></head><body>");
+        htmlContent.append("<img src=\"" + trackingUrl + "\" width=\"1\" height=\"1\" style=\"display:none;\"/>");
         htmlContent.append("<p>").append(mail.getBody()).append("</p>");
         if (mail.getMailLinks() != null){
             for (MailLink link : mail.getMailLinks()) {
-                htmlContent.append("<p><a href='").append(link.getUrl()).append("' target='_blank'>").append(link.getUrl()).append("</a></p>");
+                String linkTrackingUrl = "https://abd1-154-182-32-10.ngrok-free.app/track/trackLink/" + mail.getId() + "/" + link.getId();
+                htmlContent.append("<p><a href='").append(linkTrackingUrl).append("' target='_blank'>").append(link.getUrl()).append("</a></p>");
             }
             htmlContent.append("</body></html>");
         }
@@ -120,11 +123,12 @@ public class MailServiceImpl implements MailService {
         try {
             mail.setMailStatus(MailStatus.SENT);
             javaMailSender.send(mailMessage);
-            mail.setEventDate(LocalDateTime.now());
+            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
+            mail.setMailStatus(MailStatus.DELIVERED);
             return "Mail Is Sent Successfully";
         } catch (Exception e) {
             mail.setMailStatus(MailStatus.FAILED);
-            mail.setEventDate(LocalDateTime.now());
+            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
             return e.getMessage();
         } finally {
             String mailMessageId = mailMessage.getMessageID();
@@ -132,75 +136,33 @@ public class MailServiceImpl implements MailService {
                 mailMessageId = mailMessageId.substring(1, mailMessageId.length() - 1);
                 mail.setMessageId(mailMessageId);
             }
-            setLastEventMailStatus(mail);
             mailRepository.save(mail);
         }
     }
 
 
-    @Override
-    public void setLastEventMailStatus(Mail mail) throws JsonProcessingException {
-        if (mail.getMessageId() != null) {
-            String jsonData = eventMailClient.getMailgunEvents(domainName, mail.getMessageId());
-            JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
-            if (jsonNode != null && !jsonNode.isEmpty()) {
-                JsonNode items = jsonNode.path("items");
-                if ((items.isArray() && items.size() > 0 && items != null) || !items.isEmpty()) {
-                    JsonNode lastItem = items.get(0);
-                    String event = lastItem.get("event").asText();
-                    String eventTime = lastItem.get("timestamp").asText();
-                    if (event.equals("delivered")) {
-                        mail.setMailStatus(MailStatus.DELIVERED);
-                    } else if (event.equals("accepted")) {
-                        mail.setMailStatus(MailStatus.ACCEPTED);
-                    } else if (event.equals("failed")) {
-                        mail.setMailStatus(MailStatus.FAILED);
-                    } else if (event.equals("rejected")) {
-                        mail.setMailStatus(MailStatus.REJECTED);
-                    } else if (event.equals("clicked")) {
-                        mail.setMailStatus(MailStatus.CLICKED);
-                    } else if (event.equals("opened")) {
-                        mail.setMailStatus(MailStatus.OPENED);
-                    }
-                    mail.setEventDate(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"));
-                }
-            }
-            mailRepository.save(mail);
-        }
-    }
 
-    @Override
-    @Transactional
-    public List<MailDto> getAllMails() throws JsonProcessingException {
-        List<Mail> mails = mailRepository.findAll();
-        String jsonData = eventMailClient.getMailgunEvents(domainName);
-        JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
-        if (jsonNode != null && !jsonNode.isEmpty()) {
-            JsonNode itemsNode = jsonNode.path("items");
-            for (Mail mail : mails) {
-                if (mail.getMessageId() != null) {
-                    for (JsonNode item : itemsNode) {
-                        String jsonMessageId = item.path("message").path("headers").path("message-id").asText();
-                        if (mail.getMessageId().equals(jsonMessageId)) {
-                            String event = item.path("event").asText();
-                            String eventTime = item.get("timestamp").asText();
-                            mail.setMailStatus(MailStatus.valueOf(event.toUpperCase()));
-                            mailRepository.save(mail);
-                            mailRepository.updateEventDateForMailEvent(Utilities.formatTimestamp(Double.parseDouble(eventTime), "Asia/Riyadh"),mail.getMessageId() , mail.getCreatedDate());
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return mailMapper.mapToList(mails);
-    }
 
     @Override
     public void deleteById(Long mailId) {
         Mail mail =  mailRepository.findById(mailId).orElseThrow(() ->
                 new ResourceNotFoundExceptions("mail" , "id" , mailId));
        mailRepository.deleteById(mail.getId());
+    }
+
+    @Override
+    public void trackMail(Long mailId) {
+        Mail mail = findById(mailId);
+        if (mail != null){
+            mail.setMailStatus(MailStatus.OPENED);
+            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
+        }
+        mailRepository.save(mail);
+    }
+
+    @Override
+    public void updateMailStatusWhenLinksAreClicked(Long mailId) {
+        mailRepository.updateMailStatusWhenLinksAreClicked(mailId,LocalDateTime.now(ZoneId.of("Asia/Riyadh")),MailStatus.CLICKED);
     }
 
 

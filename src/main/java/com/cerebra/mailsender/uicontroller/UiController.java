@@ -49,11 +49,11 @@ public class UiController {
         }
     }
 
-    @GetMapping("/mails")
-    public String mailList(Model model) throws JsonProcessingException {
-        model.addAttribute("mails",mailService.getAllMails());
-        return "mails";
-    }
+//    @GetMapping("/mails")
+//    public String mailList(Model model) throws JsonProcessingException {
+//        model.addAttribute("mails",mailService.getAllMails());
+//        return "mails";
+//    }
     @PostMapping("/add-mail")
     public String handleAddMail(@ModelAttribute MailDto mailDto, Model model) {
         mailService.saveMail(mailMapper.unMap(mailDto));
@@ -67,7 +67,7 @@ public class UiController {
     }
     @GetMapping("/mail-detail/{id}")
     public String mailDetail(@PathVariable Long id, Model model) throws JsonProcessingException {
-        Mail mail = mailService.getById(id);
+        Mail mail = mailService.getMailWithLinksById(id);
         MailDto mailDto = mailMapper.map(mail);
         model.addAttribute("mail", mailDto);
         return "mail-detail";

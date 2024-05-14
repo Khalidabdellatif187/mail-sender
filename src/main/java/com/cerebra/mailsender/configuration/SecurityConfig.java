@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/ui/signup").permitAll()
                         .requestMatchers("/ui/signin").permitAll()
                         .requestMatchers("/ui").permitAll()
+                        .requestMatchers("/track/**").permitAll()
                         .anyRequest().authenticated()
                  ).exceptionHandling( exception -> exception
                 .authenticationEntryPoint(authenticationEntryPoint)

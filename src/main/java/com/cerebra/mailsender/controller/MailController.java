@@ -25,19 +25,10 @@ public class MailController {
 
     private final MailService mailService;
     private final MailMapper mailMapper;
-    private final EventMailClient eventMailClient;
     @Value("${domain.name}")
     private String domainName;
 
 
-    @GetMapping
-    public ResponseEntity<List<MailDto>> getAllMails() throws JsonProcessingException {
-        List<MailDto> mailDtos = mailService.getAllMails();
-        return new ResponseEntity<>(mailDtos,HttpStatus.OK);
-//        return ResponseEntity.ok()
-//                .cacheControl(CacheControl.noCache())
-//                .body(mailDtos);
-    }
 
     @PostMapping("/save")
     public ResponseEntity<String> save(@RequestBody MailDto mailDto){
@@ -46,7 +37,7 @@ public class MailController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MailDto> getById(@PathVariable("id")Long id) throws JsonProcessingException {
-        Mail mail = mailService.getById(id);
+        Mail mail = mailService.getMailWithLinksById(id);
         return new ResponseEntity<>(mailMapper.map(mail),HttpStatus.OK);
     }
 
@@ -55,13 +46,6 @@ public class MailController {
         return new ResponseEntity<>(mailService.sendEmail(id),HttpStatus.OK);
     }
 
-
-    @GetMapping("/events")
-    public ResponseEntity<JsonNode> getEvents(@RequestParam("messageId")String messageId) throws JsonProcessingException {
-        String jsonData = eventMailClient.getMailgunEvents(domainName,messageId);
-        JsonNode jsonNode = new ObjectMapper().readTree(jsonData);
-        return new ResponseEntity<>(jsonNode,HttpStatus.OK);
-    }
 
 
     @DeleteMapping("/{id}")

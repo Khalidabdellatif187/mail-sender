@@ -24,8 +24,8 @@ public class MailLink {
     @Column
     private String url;
 
-    @Column
-    private Integer clickCount;
+    @Column(nullable = false)
+    private Integer clickCount = 0;
 
     @ManyToOne
     @JoinColumn(name = "mail_id")
