@@ -18,14 +18,11 @@ public interface MailService {
 
 
     String saveMail(Mail mail);
-    Mail getMailWithLinksById(Long id) throws JsonProcessingException;
-
     Mail findById(Long id);
     String sendEmail(Long id) throws MessagingException, JsonProcessingException;
     void deleteById(Long mailId);
-
     void trackMail(Long mailId);
-
     void updateMailStatusWhenLinksAreClicked(Long mailId);
+    List<MailDto> getAllMails();
 
 }

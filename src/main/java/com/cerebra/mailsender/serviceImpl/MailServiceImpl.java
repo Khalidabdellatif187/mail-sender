@@ -1,23 +1,14 @@
 package com.cerebra.mailsender.serviceImpl;
-
-
-import com.cerebra.mailsender.clients.EventMailClient;
 import com.cerebra.mailsender.dto.MailDto;
 import com.cerebra.mailsender.dto.MailLinkDto;
 import com.cerebra.mailsender.enums.MailStatus;
 import com.cerebra.mailsender.exception.ResourceNotFoundExceptions;
-import com.cerebra.mailsender.mapper.MailLinkMapper;
 import com.cerebra.mailsender.mapper.MailMapper;
 import com.cerebra.mailsender.model.Mail;
 import com.cerebra.mailsender.model.MailLink;
-import com.cerebra.mailsender.repository.MailLinkRepository;
 import com.cerebra.mailsender.repository.MailRepository;
-import com.cerebra.mailsender.service.MailLinkService;
 import com.cerebra.mailsender.service.MailService;
-import com.cerebra.mailsender.utility.Utilities;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
@@ -27,15 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -72,13 +58,6 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public Mail getMailWithLinksById(Long id) throws JsonProcessingException {
-        Mail mail = mailRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundExceptions("mail" , "id" , id));
-        return mail;
-    }
-
-    @Override
     public Mail findById(Long id) {
         Mail mail = mailRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundExceptions("mail" , "id" , id));
@@ -102,13 +81,13 @@ public class MailServiceImpl implements MailService {
         mailMessage.setTo(mail.getRecipient());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setFrom(mail.getSender());
-        String trackingUrl = "https://abd1-154-182-32-10.ngrok-free.app/track/"+mail.getId();
+        String trackingUrl = "https://d2b2-196-135-151-38.ngrok-free.app/track/"+mail.getId();
         StringBuilder htmlContent = new StringBuilder("<html><head></head><body>");
         htmlContent.append("<img src=\"" + trackingUrl + "\" width=\"1\" height=\"1\" style=\"display:none;\"/>");
         htmlContent.append("<p>").append(mail.getBody()).append("</p>");
         if (mail.getMailLinks() != null){
             for (MailLink link : mail.getMailLinks()) {
-                String linkTrackingUrl = "https://abd1-154-182-32-10.ngrok-free.app/track/trackLink/" + mail.getId() + "/" + link.getId();
+                String linkTrackingUrl = "https://d2b2-196-135-151-38.ngrok-free.app/track/trackLink/" + mail.getId() + "/" + link.getId();
                 htmlContent.append("<p><a href='").append(linkTrackingUrl).append("' target='_blank'>").append(link.getUrl()).append("</a></p>");
             }
             htmlContent.append("</body></html>");
@@ -123,12 +102,12 @@ public class MailServiceImpl implements MailService {
         try {
             mail.setMailStatus(MailStatus.SENT);
             javaMailSender.send(mailMessage);
-            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
+            mail.setEventDate(LocalDateTime.now());
             mail.setMailStatus(MailStatus.DELIVERED);
             return "Mail Is Sent Successfully";
         } catch (Exception e) {
             mail.setMailStatus(MailStatus.FAILED);
-            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
+            mail.setEventDate(LocalDateTime.from(LocalDateTime.now()));
             return e.getMessage();
         } finally {
             String mailMessageId = mailMessage.getMessageID();
@@ -139,10 +118,6 @@ public class MailServiceImpl implements MailService {
             mailRepository.save(mail);
         }
     }
-
-
-
-
     @Override
     public void deleteById(Long mailId) {
         Mail mail =  mailRepository.findById(mailId).orElseThrow(() ->
@@ -155,14 +130,20 @@ public class MailServiceImpl implements MailService {
         Mail mail = findById(mailId);
         if (mail != null){
             mail.setMailStatus(MailStatus.OPENED);
-            mail.setEventDate(LocalDateTime.now(ZoneId.of("Asia/Riyadh")));
+            mail.setEventDate(LocalDateTime.now());
         }
         mailRepository.save(mail);
     }
 
     @Override
     public void updateMailStatusWhenLinksAreClicked(Long mailId) {
-        mailRepository.updateMailStatusWhenLinksAreClicked(mailId,LocalDateTime.now(ZoneId.of("Asia/Riyadh")),MailStatus.CLICKED);
+        mailRepository.updateMailStatusWhenLinksAreClicked(mailId,LocalDateTime.now(),MailStatus.CLICKED);
+    }
+
+    @Override
+    public List<MailDto> getAllMails() {
+       List<Mail> mails = mailRepository.findAll();
+       return mailMapper.mapToList(mails);
     }
 
 
